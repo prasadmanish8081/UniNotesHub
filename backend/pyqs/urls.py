@@ -1,10 +1,10 @@
-# pyqs/urls.py
 from django.urls import path, register_converter
 from .views import (
     UploadPYQView, UserPYQListView, EditDeletePYQView,
     UniversityPYQListView, RatePYQView, PYQRatingsView,
     ManagePYQRatingView, SearchSuggestionsView
 )
+
 
 class IntOrAllConverter:
     regex = 'all|[0-9]+'
@@ -13,12 +13,14 @@ class IntOrAllConverter:
     def to_url(self, value):
         return str(value)
 
+
 register_converter(IntOrAllConverter, 'int_or_all')
+
 
 urlpatterns = [
     path('pyqs/upload/', UploadPYQView.as_view(), name='pyqs_uploaded'),
     path('pyqs/myuploads/', UserPYQListView.as_view(), name='user-pyqs'),
-    path('pyqs/myuploads/<int:pk>/', EditDeletePYQView.as_view(), name='edit-delete-pyq'),
+    path('pyqs/myUploads/<int:pk>/', EditDeletePYQView.as_view(), name='edit-delete-pyq'),
     path(
         "pyqs/university/<int_or_all:university_id>/program/<int_or_all:program_id>/branch/<int_or_all:branch_id>/courses/<int_or_all:course_id>/",
         UniversityPYQListView.as_view(),

@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'users',
     'pyqs',
     'universities',
+    
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -62,7 +63,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-DEBUG = True
+
 
 SECURE_SSL_REDIRECT = os.getenv("DJANGO_SECURE_SSL_REDIRECT", "False").lower() in ["true", "1"]
 SESSION_COOKIE_SECURE = not DEBUG
@@ -87,8 +88,7 @@ CORS_ALLOW_METHODS = [
 ]
 
 
-# Allow credentials (cookies, JWT tokens)
-CORS_ALLOW_CREDENTIALS = True
+
 
 # Allow specific headers
 CORS_ALLOW_HEADERS = [

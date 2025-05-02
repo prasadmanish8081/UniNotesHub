@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from universities.models import University, Program, Branch, Course
+from .models import University, Program, Branch, Course, ProgramStructure
 
 
 class UniversitySerializer(serializers.ModelSerializer):
@@ -11,16 +11,8 @@ class UniversitySerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         request = self.context.get('request')
-        print(f"Serializer - Image: {obj.image}, Request: {request}")
         if obj.image and request:
-            try:
-                url = request.build_absolute_uri(obj.image.url)
-                print(f"Generated URL: {url}")
-                return url
-            except Exception as e:
-                print(f"Error generating URL: {e}")
-                return None
-        print("Returning None - No image or no request")
+            return request.build_absolute_uri(obj.image.url)
         return None
 
 
@@ -43,40 +35,47 @@ class ProgramSerializer(serializers.ModelSerializer):
 
 
 class BranchSerializer(serializers.ModelSerializer):
-    program = ProgramSerializer(read_only=True)
-    program_id = serializers.PrimaryKeyRelatedField(
-        queryset=Program.objects.all(), source='program', write_only=True
-    )
     image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Branch
-        fields = ['id', 'name', 'program', 'program_id', 'image_url']
-
-    def get_image_url(self, obj):
-        request = self.context.get('request')
-        try:
-            if obj.image and hasattr(obj.image, 'url') and request:
-                return request.build_absolute_uri(obj.image.url)
-        except Exception as e:
-            print(f"Error generating image URL: {e}")
-        return None
-
-
-
-class CourseSerializer(serializers.ModelSerializer):
-    branch = BranchSerializer(read_only=True)
-    branch_id = serializers.PrimaryKeyRelatedField(
-        queryset=Branch.objects.all(), source='branch', write_only=True
-    )
-    image_url = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Course
-        fields = ['id', 'name', 'branch', 'branch_id', 'image_url']
+        fields = ['id', 'name', 'image_url']
 
     def get_image_url(self, obj):
         request = self.context.get('request')
         if obj.image and request:
             return request.build_absolute_uri(obj.image.url)
         return None
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Course
+        fields = ['id', 'name', 'image_url']
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        if obj.image and request:
+            return request.build_absolute_uri(obj.image.url)
+        return None
+
+
+class ProgramStructureSerializer(serializers.ModelSerializer):
+    program = ProgramSerializer(read_only=True)
+    program_id = serializers.PrimaryKeyRelatedField(
+        queryset=Program.objects.all(), source='program', write_only=True
+    )
+    branch = BranchSerializer(read_only=True)
+    branch_id = serializers.PrimaryKeyRelatedField(
+        queryset=Branch.objects.all(), source='branch', write_only=True
+    )
+    course = CourseSerializer(read_only=True)
+    course_id = serializers.PrimaryKeyRelatedField(
+        queryset=Course.objects.all(), source='course', write_only=True
+    )
+
+    class Meta:
+        model = ProgramStructure
+        fields = ['id', 'program', 'program_id', 'branch', 'branch_id', 'course', 'course_id']

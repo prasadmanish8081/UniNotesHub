@@ -1,10 +1,9 @@
-# pyqs/serializers.py
 from rest_framework import serializers
 from .models import PYQ, PYQRating
 
 
 class PYQRatingSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source="user.name")
+    user = serializers.ReadOnlyField(source="user.username")
     user_id = serializers.ReadOnlyField(source="user.id")
     user_profile_picture = serializers.SerializerMethodField()
 
@@ -18,6 +17,7 @@ class PYQRatingSerializer(serializers.ModelSerializer):
         model = PYQRating
         fields = ["id", "user", "user_id", "user_profile_picture", "pyq", "rating", "comment", "created_at"]
         read_only_fields = ["user", "user_id", "user_profile_picture", "created_at"]
+
 
 class PYQSerializer(serializers.ModelSerializer):
     file_url = serializers.SerializerMethodField()
